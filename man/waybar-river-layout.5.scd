@@ -19,6 +19,10 @@ Addressed by *river/layout*
 	default: {} ++
 	The format, how information should be displayed. On {} data gets inserted.
 
+*format-exec*: ++
+	typeof: string ++
+	default: {} ++
+	Path to an executable which transforms the *format* string.
 *rotate*: ++
 	typeof: integer ++
 	Positive value to rotate the text label (in 90 degree increments).
