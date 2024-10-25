@@ -4,6 +4,7 @@
 #include <wayland-client.h>
 
 #include "client.hpp"
+#include "util/command.hpp"
 
 namespace waybar::modules::river {
 
@@ -120,6 +121,7 @@ Layout::Layout(const std::string &id, const waybar::Bar &bar, const Json::Value 
     spdlog::error("wl_seat not advertised");
   }
 
+
   label_.hide();
   ALabel::update();
 
@@ -142,11 +144,22 @@ Layout::~Layout() {
 }
 
 void Layout::handle_name(const char *name) {
+  const char *text;
+  if (config_["format-exec"].isString()) {
+    std::string outString;
+    std::string cmd = config_["format-exec"].asString() + " " + name;
+    util::command::res result = util::command::exec(cmd, outString);
+    text = result.out.c_str();
+    spdlog::error(outString);
+  }
+  else {
+    text = name;
+  }
   if (std::strcmp(name, "") == 0 || format_.empty()) {
     label_.hide();  // hide empty labels or labels with empty format
   } else {
     label_.show();
-    label_.set_markup(fmt::format(fmt::runtime(format_), Glib::Markup::escape_text(name).raw()));
+    label_.set_markup(fmt::format(fmt::runtime(format_), Glib::Markup::escape_text(text).raw()));
   }
   ALabel::update();
 }
